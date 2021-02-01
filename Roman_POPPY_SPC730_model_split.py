@@ -177,148 +177,152 @@ tilt = poppy.ZernikeWFE(radius=D/2,
                         aperture_stop=False)
 plt.figure(figsize=(figwidth,figheight)); tilt.display(what='both')
 
+def run_spc(run_spc1=False,run_spc_fpm=False,run_spc2=False,run_spc_comp=False):
+    if run_spc1:
+        # create the initial optical system upto the optic before the FPM
+        npix = 1000
+        oversample = 2
+        beam_ratio = 1/oversample
 
-# create the initial optical system upto the optic before the FPM
-# npix = 1000
-# oversample = 2
-# beam_ratio = 1/oversample
+        spc1 = poppy.FresnelOpticalSystem(name='SPC Part 1', pupil_diameter=D,
+                                         npix=npix, beam_ratio=beam_ratio, verbose=True)
+        spc1.add_optic(pupil)
 
-# spc1 = poppy.FresnelOpticalSystem(name='SPC Part 1', pupil_diameter=D,
-#                                  npix=npix, beam_ratio=beam_ratio, verbose=True)
-# spc1.add_optic(pupil)
+        spc1.add_optic(tilt)
 
-# spc1.add_optic(tilt)
+        spc1.add_optic(primary)
 
-# spc1.add_optic(primary)
+        spc1.add_optic(secondary, distance=d_pri_sec)
+        spc1.add_optic(poppy.CircularAperture(radius=diam_sec/2,name="Secondary aperture"))
 
-# spc1.add_optic(secondary, distance=d_pri_sec)
-# spc1.add_optic(poppy.CircularAperture(radius=diam_sec/2,name="Secondary aperture"))
+        spc1.add_optic(m3, distance=d_sec_fold1 + d_fold1_m3)
+        spc1.add_optic(poppy.CircularAperture(radius=diam_m3/2,name="M-3 aperture"))
 
-# spc1.add_optic(m3, distance=d_sec_fold1 + d_fold1_m3)
-# spc1.add_optic(poppy.CircularAperture(radius=diam_m3/2,name="M-3 aperture"))
+        spc1.add_optic(m4, distance=d_m3_m4)
+        spc1.add_optic(poppy.CircularAperture(radius=diam_m4/2,name="M-4 aperture"))
 
-# spc1.add_optic(m4, distance=d_m3_m4)
-# spc1.add_optic(poppy.CircularAperture(radius=diam_m4/2,name="M-4 aperture"))
+        spc1.add_optic(m5, distance=d_m4_m5)
+        spc1.add_optic(poppy.CircularAperture(radius=diam_m5/2,name="M-5 aperture"))
 
-# spc1.add_optic(m5, distance=d_m4_m5)
-# spc1.add_optic(poppy.CircularAperture(radius=diam_m5/2,name="M-5 aperture"))
+        spc1.add_optic(oap1, distance=d_m5_fold2 + d_fold2_fsm + d_fsm_oap1)
+        spc1.add_optic(poppy.CircularAperture(radius=diam_oap1/2,name="OAP1 aperture"))
 
-# spc1.add_optic(oap1, distance=d_m5_fold2 + d_fold2_fsm + d_fsm_oap1)
-# spc1.add_optic(poppy.CircularAperture(radius=diam_oap1/2,name="OAP1 aperture"))
+        if use_dms:
+            spc1.add_optic(oap2, distance=d_oap1_focm + d_focm_oap2)
+            spc1.add_optic(poppy.CircularAperture(radius=diam_oap2/2,name="OAP2 aperture"))
 
-# if use_dms:
-#     spc1.add_optic(oap2, distance=d_oap1_focm + d_focm_oap2)
-#     spc1.add_optic(poppy.CircularAperture(radius=diam_oap2/2,name="OAP2 aperture"))
+            spc1.add_optic(dm1, distance=d_oap2_dm1) # now to the DMs
+            spc1.add_optic(dm2, distance=d_dm1_dm2)
 
-#     spc1.add_optic(dm1, distance=d_oap2_dm1) # now to the DMs
-#     spc1.add_optic(dm2, distance=d_dm1_dm2)
+            spc1.add_optic(oap3, distance=d_dm2_oap3)
+        else:
+            spc1.add_optic(oap2, distance=d_oap1_focm + d_focm_oap2)
+            spc1.add_optic(poppy.CircularAperture(radius=diam_oap2/2,name="OAP2 aperture"))
 
-#     spc1.add_optic(oap3, distance=d_dm2_oap3)
-# else:
-#     spc1.add_optic(oap2, distance=d_oap1_focm + d_focm_oap2)
-#     spc1.add_optic(poppy.CircularAperture(radius=diam_oap2/2,name="OAP2 aperture"))
-    
-#     spc1.add_optic(oap3, distance=d_oap2_dm1 + d_dm1_dm2 + d_dm2_oap3)
-# spc1.add_optic(poppy.CircularAperture(radius=diam_oap3/2,name="OAP3 aperture"))
+            spc1.add_optic(oap3, distance=d_oap2_dm1 + d_dm1_dm2 + d_dm2_oap3)
+        spc1.add_optic(poppy.CircularAperture(radius=diam_oap3/2,name="OAP3 aperture"))
 
-# spc1.add_optic(oap4, distance=d_oap3_fold3 + d_fold3_oap4)
-# spc1.add_optic(poppy.CircularAperture(radius=diam_oap4/2,name="OAP4 aperture"))
+        spc1.add_optic(oap4, distance=d_oap3_fold3 + d_fold3_oap4)
+        spc1.add_optic(poppy.CircularAperture(radius=diam_oap4/2,name="OAP4 aperture"))
 
-# spc1.add_optic(SPM, distance=d_oap4_pupilmask + 0)#0.188*u.m) # why add 0.188
+        spc1.add_optic(SPM, distance=d_oap4_pupilmask + 0)#0.188*u.m) # why add 0.188
 
-# # spc1.add_optic(oap5, distance=d_pupilmask_oap5)
-# spc1.add_optic(poppy.CircularAperture(radius=diam_oap5/2,name="OAP5 aperture"), distance=d_pupilmask_oap5)
+        # spc1.add_optic(oap5, distance=d_pupilmask_oap5)
+        spc1.add_optic(poppy.CircularAperture(radius=diam_oap5/2,name="OAP5 aperture"), distance=d_pupilmask_oap5)
 
-# spc1.describe()
+        spc1.describe()
 
-# psf,wfs = spc1.calc_psf(wavelength=lambda_m, display_intermediates=True, return_intermediates=True)
-# wf_int = wfs[-1].intensity
-# wf_phs = wfs[-1].phase
-# n = wf_int.shape[0]
-# ext = wfs[-1].pixelscale.value * n/2
-# extent = [-ext,ext,-ext,ext]
+        psf,wfs = spc1.calc_psf(wavelength=lambda_m, display_intermediates=True, return_intermediates=True)
+        wf_int = wfs[-1].intensity
+        wf_phs = wfs[-1].phase
+        n = wf_int.shape[0]
+        ext = wfs[-1].pixelscale.value * n/2
+        extent = [-ext,ext,-ext,ext]
 
-# fig,ax = plt.subplots(nrows=1,ncols=2,figsize=(10,4),dpi=150)
-# im1=ax[0].imshow(wf_int, norm=LogNorm(), extent=extent, cmap='magma')
-# fig.colorbar(im1,ax=ax[0])
-# im2=ax[1].imshow(wf_phs, extent=extent, cmap='magma')
-# fig.colorbar(im2,ax=ax[1])
+        fig,ax = plt.subplots(nrows=1,ncols=2,figsize=(10,4),dpi=150)
+        im1=ax[0].imshow(wf_int, norm=LogNorm(), extent=extent, cmap='magma')
+        fig.colorbar(im1,ax=ax[0])
+        im2=ax[1].imshow(wf_phs, extent=extent, cmap='magma')
+        fig.colorbar(im2,ax=ax[1])
 
-# create the optical system for the FPM
-npix = 1000
-oversample = 2
-spc_fpm = poppy.OpticalSystem(name='SPC FPM', pupil_diameter=diam_oap5, npix=npix, oversample=oversample)
+    if run_spc_fpm:
+        # create the optical system for the FPM
+        npix = 1000
+        oversample = 2
+        spc_fpm = poppy.OpticalSystem(name='SPC FPM', pupil_diameter=diam_oap5, npix=npix, oversample=oversample)
 
-spc_fpm.add_pupil(poppy.CircularAperture(radius=diam_oap5/2,name="OAP5 aperture"))
+        spc_fpm.add_pupil(poppy.CircularAperture(radius=diam_oap5/2,name="OAP5 aperture"))
 
-FPM.propagation_hint='MFT'
-use_fpm = True
-if use_fpm:
-    spc_fpm.add_image(FPM)
-else:
-    spc_fpm.add_image(poppy.CircularAperture(radius=diam_oap5/2,name="FPM (None)"))
-    
-spc_fpm.add_pupil(poppy.CircularAperture(radius=diam_oap6/2,name="OAP6 aperture"))
+        FPM.propagation_hint='MFT'
+        use_fpm = True
+        if use_fpm:
+            spc_fpm.add_image(FPM)
+        else:
+            spc_fpm.add_image(poppy.CircularAperture(radius=diam_oap5/2,name="FPM (None)"))
 
-plt.figure(figsize=(15,15))
-psf,wfs = spc_fpm.calc_psf(wavelength=lambda_m, display_intermediates=True, return_intermediates=True)
+        spc_fpm.add_pupil(poppy.CircularAperture(radius=diam_oap6/2,name="OAP6 aperture"))
 
-wf_int = wfs[-1].intensity
-wf_phs = wfs[-1].phase
-n = wf_int.shape[0]
-ext = wfs[-1].pixelscale.value * n/2
-extent = [-ext,ext,-ext,ext]
+        plt.figure(figsize=(15,15))
+        psf,wfs = spc_fpm.calc_psf(wavelength=lambda_m, display_intermediates=True, return_intermediates=True)
 
-fig,ax = plt.subplots(nrows=1,ncols=2,figsize=(10,4),dpi=150)
-im1=ax[0].imshow(wf_int, norm=LogNorm(), extent=extent, cmap='magma')
-fig.colorbar(im1,ax=ax[0])
-im2=ax[1].imshow(wf_phs, extent=extent, cmap='magma')
-fig.colorbar(im2,ax=ax[1])
+        wf_int = wfs[-1].intensity
+        wf_phs = wfs[-1].phase
+        n = wf_int.shape[0]
+        ext = wfs[-1].pixelscale.value * n/2
+        extent = [-ext,ext,-ext,ext]
 
-# create the optical system for the rest of the optics
-# npix = 1000
-# oversample = 2
-# beam_ratio = 1/oversample
-# spc2 = poppy.FresnelOpticalSystem(name='SPC 2', pupil_diameter=diam_oap6,
-#                                   npix=npix, beam_ratio=beam_ratio, verbose=True)
+        fig,ax = plt.subplots(nrows=1,ncols=2,figsize=(10,4),dpi=150)
+        im1=ax[0].imshow(wf_int, norm=LogNorm(), extent=extent, cmap='magma')
+        fig.colorbar(im1,ax=ax[0])
+        im2=ax[1].imshow(wf_phs, extent=extent, cmap='magma')
+        fig.colorbar(im2,ax=ax[1])
 
-# spc2.add_optic(oap6, distance=d_fpm_oap6)
-# spc2.add_optic(poppy.CircularAperture(radius=diam_oap6/2,name="OAP6 aperture"))
+    if run_spc2:
+        # create the optical system for the rest of the optics
+        npix = 1000
+        oversample = 2
+        beam_ratio = 1/oversample
+        spc2 = poppy.FresnelOpticalSystem(name='SPC 2', pupil_diameter=diam_oap6,
+                                          npix=npix, beam_ratio=beam_ratio, verbose=True)
 
-# spc2.add_optic(LS, distance=d_oap6_lyotstop)
+        spc2.add_optic(oap6, distance=d_fpm_oap6)
+        spc2.add_optic(poppy.CircularAperture(radius=diam_oap6/2,name="OAP6 aperture"))
 
-# spc2.add_optic(oap7, distance=d_lyotstop_oap7)
-# spc2.add_optic(poppy.CircularAperture(radius=diam_oap7/2,name="OAP7 aperture"))
+        spc2.add_optic(LS, distance=d_oap6_lyotstop)
 
-# if use_fieldstop:
-#     spc2.add_optic(fieldstop, distance=d_oap7_fieldstop)
-#     spc2.add_optic(oap8, distance=d_fieldstop_oap8)
-# else:
-#     spc2.add_optic(oap8, distance=d_oap7_fieldstop + d_fieldstop_oap8)
-# spc2.add_optic(poppy.CircularAperture(radius=diam_oap8/2,name="OAP8 aperture"))
+        spc2.add_optic(oap7, distance=d_lyotstop_oap7)
+        spc2.add_optic(poppy.CircularAperture(radius=diam_oap7/2,name="OAP7 aperture"))
 
-# spc2.add_optic(lens, distance=d_oap8_filter + d_filter_lens)
+        if use_fieldstop:
+            spc2.add_optic(fieldstop, distance=d_oap7_fieldstop)
+            spc2.add_optic(oap8, distance=d_fieldstop_oap8)
+        else:
+            spc2.add_optic(oap8, distance=d_oap7_fieldstop + d_fieldstop_oap8)
+        spc2.add_optic(poppy.CircularAperture(radius=diam_oap8/2,name="OAP8 aperture"))
 
-# spc2.add_optic(image, distance=d_lens_fold4 + d_fold4_image)
+        spc2.add_optic(lens, distance=d_oap8_filter + d_filter_lens)
 
-# spc2.describe()
+        spc2.add_optic(image, distance=d_lens_fold4 + d_fold4_image)
 
-# psf,wfs = spc2.calc_psf(wavelength=lambda_m, display_intermediates=True, return_intermediates=True)
-# wf_int = wfs[-2].intensity
-# wf_phs = wfs[-2].phase
-# n = wf_int.shape[0]
-# ext = wfs[-2].pixelscale.value * n/2
-# extent = [-ext,ext,-ext,ext]
+        spc2.describe()
 
-# fig,ax = plt.subplots(nrows=1,ncols=2,figsize=(10,4),dpi=150)
-# im1=ax[0].imshow(wf_int, norm=LogNorm(), extent=extent, cmap='magma')
-# fig.colorbar(im1,ax=ax[0])
-# im2=ax[1].imshow(wf_phs, extent=extent, cmap='magma')
-# fig.colorbar(im2,ax=ax[1])
+        psf,wfs = spc2.calc_psf(wavelength=lambda_m, display_intermediates=True, return_intermediates=True)
+        wf_int = wfs[-2].intensity
+        wf_phs = wfs[-2].phase
+        n = wf_int.shape[0]
+        ext = wfs[-2].pixelscale.value * n/2
+        extent = [-ext,ext,-ext,ext]
 
-# create the compound optical system and perform the PSF calculation
-# spc = poppy.CompoundOpticalSystem(optsyslist=[spc1, spc_fpm, spc2], )
-# spc.calc_psf(wavelength=lambda_m)
+        fig,ax = plt.subplots(nrows=1,ncols=2,figsize=(10,4),dpi=150)
+        im1=ax[0].imshow(wf_int, norm=LogNorm(), extent=extent, cmap='magma')
+        fig.colorbar(im1,ax=ax[0])
+        im2=ax[1].imshow(wf_phs, extent=extent, cmap='magma')
+        fig.colorbar(im2,ax=ax[1])
+
+    if run_spc_comp:
+        # create the compound optical system and perform the PSF calculation
+        spc = poppy.CompoundOpticalSystem(optsyslist=[spc1, spc_fpm, spc2], )
+        spc.calc_psf(wavelength=lambda_m)
 
 
 
