@@ -548,32 +548,7 @@ class WFI(WFIRSTInstrument):
     @property
     def _masked_pupil_path(self):
         return self._pupil_controller._masked_pupil_path
-
-
-"""
- ███████████    █████████  ███████████              █████████    █████████  █████                                       
-░░███░░░░░███  ███░░░░░███░█░░░███░░░█             ███░░░░░███  ███░░░░░███░░███                                        
- ░███    ░███ ░███    ░░░ ░   ░███  ░             ███     ░░░  ███     ░░░  ░███                                        
- ░██████████  ░░█████████     ░███     ██████████░███         ░███          ░███                                        
- ░███░░░░░███  ░░░░░░░░███    ░███    ░░░░░░░░░░ ░███         ░███    █████ ░███                                        
- ░███    ░███  ███    ░███    ░███               ░░███     ███░░███  ░░███  ░███                                        
- █████   █████░░█████████     █████               ░░█████████  ░░█████████  █████                                       
-░░░░░   ░░░░░  ░░░░░░░░░     ░░░░░                 ░░░░░░░░░    ░░░░░░░░░  ░░░░░                                        
-                                                                                                                        
-                                                                                                                        
-                                                                                                                        
- ███████████ ██████████  █████████  ███████████     █████████    █████████  ███████████   █████ ███████████  ███████████
-░█░░░███░░░█░░███░░░░░█ ███░░░░░███░█░░░███░░░█    ███░░░░░███  ███░░░░░███░░███░░░░░███ ░░███ ░░███░░░░░███░█░░░███░░░█
-░   ░███  ░  ░███  █ ░ ░███    ░░░ ░   ░███  ░    ░███    ░░░  ███     ░░░  ░███    ░███  ░███  ░███    ░███░   ░███  ░ 
-    ░███     ░██████   ░░█████████     ░███       ░░█████████ ░███          ░██████████   ░███  ░██████████     ░███    
-    ░███     ░███░░█    ░░░░░░░░███    ░███        ░░░░░░░░███░███          ░███░░░░░███  ░███  ░███░░░░░░      ░███    
-    ░███     ░███ ░   █ ███    ░███    ░███        ███    ░███░░███     ███ ░███    ░███  ░███  ░███            ░███    
-    █████    ██████████░░█████████     █████      ░░█████████  ░░█████████  █████   █████ █████ █████           █████   
-   ░░░░░    ░░░░░░░░░░  ░░░░░░░░░     ░░░░░        ░░░░░░░░░    ░░░░░░░░░  ░░░░░   ░░░░░ ░░░░░ ░░░░░           ░░░░░    
-                                                                                                                        
-"""                                                                                                           
-                                                                                                                        
-
+                                                                                                    
 
 class CGI(WFIRSTInstrument):
     """
@@ -598,20 +573,22 @@ class CGI(WFIRSTInstrument):
         default to 3.20 arcsec for the IMAGER camera and 1.76 arcsec for the IFS.
     """
     camera_list = ['IMAGER', 'IFS']
-    filter_list = ['F575','F660', 'F721','F730','F770','F825' 'F890']
-    apodizer_list = ['NONE','CHARSPC', 'DISKSPC']
-    fpm_list = ['HLC_F575_FPM','CHARSPC_F660_BOWTIE','CHARSPC_F730_BOWTIE','CHARSPC_F770_BOWTIE','DISKSPC_F825_ANNULUS', 'CHARSPC_F890_BOWTIE', 'DISKSPC_F721_ANNULUS']
-    lyotstop_list = ['LS30D88','LS_F575','LS_F730','LS_F825']
+    filter_list = ['F575','F730','F825','F660', 'F721','F770','F890']
+    dm1_list = ['NONE','SPC825_w_ABS_1'] # must add the dms to a list
+    dm2_list = ['NONE','SPC825_w_ABS_2']
+    apodizer_list = ['NONE','CHARSPC730', 'DISKSPC825','CHARSPC', 'DISKSPC']
+    fpm_list = ['HLC_F575_FPM','CHARSPC_F730_BOWTIE','DISKSPC_F825_ANNULUS','CHARSPC_F660_BOWTIE','CHARSPC_F770_BOWTIE', 'CHARSPC_F890_BOWTIE', 'DISKSPC_F721_ANNULUS']
+    lyotstop_list = ['LS_F575','LS_F730','LS_F825','LS30D88']
     fieldstop_list = ['FS_HLC']
 
     _mode_table = {#MODE CAMERA  FILTER  APODIZER   FPM             LYOT STOP
     	'HLC_F575':     ('IMAGER','F575','NONE','HLC_F575_FPM','LS_F575'), # Flight Mode
-        'CHARSPC_F730': ('IFS', 'F730', 'CHARSPC', 'CHARSPC_F730_BOWTIE', 'LS_F730'), # Flight Mode
-        'DISKSPC_F825': ('IMAGER','F825','DISKSPC','DISKSPC_F825_ANNULUS','LS_F825'), # Flight Mode
-        'CHARSPC_F660': ('IFS', 'F660', 'CHARSPC', 'CHARSPC_F660_BOWTIE', 'LS30D88'), # Depreciated Mode
-        'CHARSPC_F770': ('IFS', 'F770', 'CHARSPC', 'CHARSPC_F770_BOWTIE', 'LS30D88'), # Depreciated Mode
-        'CHARSPC_F890': ('IFS', 'F890', 'CHARSPC', 'CHARSPC_F890_BOWTIE', 'LS30D88'), # Depreciated Mode
-        'DISKSPC_F721': ('IMAGER','F721','DISKSPC', 'DISKSPC_F721_ANNULUS', 'LS30D88')} # Depreciated Mode
+        'CHARSPC_F730': ('IFS', 'F730', 'CHARSPC730', 'CHARSPC_F730_BOWTIE', 'LS_F730','NONE','NONE'), # Flight Mode
+        'DISKSPC_F825': ('IMAGER','F825','DISKSPC825','DISKSPC_F825_ANNULUS','LS_F825','SPC825_W_ABS_1','SPC825_W_ABS_2'), # Flight Mode
+        'CHARSPC_F660': ('IFS', 'F660', 'CHARSPC', 'CHARSPC_F660_BOWTIE', 'LS30D88'), # Deprecated Mode
+        'CHARSPC_F770': ('IFS', 'F770', 'CHARSPC', 'CHARSPC_F770_BOWTIE', 'LS30D88'), # Deprecated Mode
+        'CHARSPC_F890': ('IFS', 'F890', 'CHARSPC', 'CHARSPC_F890_BOWTIE', 'LS30D88'), # Deprecated Mode
+        'DISKSPC_F721': ('IMAGER','F721','DISKSPC', 'DISKSPC_F721_ANNULUS', 'LS30D88')} # Deprecated Mode
 
     def __init__(self, mode=None, pixelscale=None, fov_arcsec=None, apply_static_opd=False):
         super(CGI, self).__init__("CGI", pixelscale=pixelscale)
@@ -646,9 +623,6 @@ class CGI(WFIRSTInstrument):
             self.mode = 'CHARSPC_F730'
         else:
             self.mode = mode
-            
-        if mode != 'CHARSPC_F730' or 'DISKSPC_825':
-          print('This is a depreciated mode')
 
     @property
     def camera(self):
@@ -671,7 +645,7 @@ class CGI(WFIRSTInstrument):
                 self.fov_arcsec = 2 * 0.45
             if not hasattr(self, 'pixelscale') or not self._override_pixelscale:
                 self.pixelscale = 0.020 # Nyquist at 825 nm
-        else:  # default to 'IFS'
+        else:  # default to 'IFS' ########### possibly delete this portion since IFS has apparently been descoped
             if not hasattr(self, 'fov_arcsec') or not self._override_fov:
                 self.fov_arcsec = 2 * 0.55  # 2015 SDT report, Section 3.4.1.1.1:
                                             # IFS has 76 lenslets across the (2 x 0.82) arcsec FoV.
@@ -699,6 +673,32 @@ class CGI(WFIRSTInstrument):
             raise ValueError("Instrument {0} doesn't have a filter called {1}.".format(self.name, value))
         self._filter = value
 
+#     @property
+#     def dm1(self):
+#         """Currently selected DM1 name"""
+#         print('dm1')
+#         return self._dm1
+    
+#     @dm1.setter
+#     def dm1(self, value):
+#         value = value.upper()
+#         if value == 'SPC825_W_ABS_1':
+#             print('dm1 setter')
+#             self._dm1_fname = os.path.join(self._datapath, "optics/F825/spc-wide_with_aberrations_dm1.fits")
+    
+#     @property
+#     def dm2(self):
+#         """Currently selected DM2 name"""
+#         print('dm2')
+#         return self._dm2
+    
+#     @dm2.setter
+#     def dm2(self, value):
+#         value = value.upper()
+#         if value == 'SPC825_W_ABS_2':
+#             print('dm2 setter')
+#             self._dm2_fname = os.path.join(self._datapath, "optics/F825/spc-wide_with_aberrations_dm2.fits")
+        
     @property
     def apodizer(self):
         """Currently selected apodizer name"""
@@ -710,15 +710,14 @@ class CGI(WFIRSTInstrument):
         if value not in self.apodizer_list:
             raise ValueError("Instrument {0} doesn't have a apodizer called {1}.".format(self.name, value))
         self._apodizer = value
-
-        if value == 'DISKSPC':
-            self._apodizer_fname = \
-                os.path.join(self._datapath, "optics/F825/DISKSPC_SP_1002pix.fits")
-        if value == 'NONE':
-            print('mode has no apodizer')
-        else:  # for now, default to CHARSPC
-            self._apodizer_fname = \
-                os.path.join(self._datapath, "optics/F730/CHARSPC_SP_1002pix.fits.gz")
+        if value == 'CHARSPC730':
+            self._apodizer_fname = os.path.join(self._datapath, "optics/F730/SPM_SPC-20190130_rotated.fits")
+        elif value == 'DISKSPC825':
+            self._apodizer_fname = os.path.join(self._datapath, "optics/F825/SPM_SPC-20181220_1000_rounded9_gray_rotated.fits")
+        elif value == 'DISKSPC':
+            self._apodizer_fname = os.path.join(self._datapath, "optics/deprecated/DISKSPC_SP_256pix.fits.gz")
+        else:  
+            self._apodizer_fname = os.path.join(self._datapath, "optics/deprecated/CHARSPC_SP_256pix.fits.gz")
 
     @property
     def fpm(self):
@@ -732,7 +731,7 @@ class CGI(WFIRSTInstrument):
             raise ValueError("Instrument {0} doesn't have a FPM called {1}.".format(self.name, value))
         self._fpm = value
         if value.startswith('CHARSPC_F730'):
-            self._fpmres = 4
+            self._fpmres = 3
             self._owa = 9.
             self._Mfpm = int(np.ceil(self._fpmres * self._owa))
             self._fpm_fname = os.path.join(self._datapath,"optics/F730/FPM_res100_SPC-20190130.fits")
@@ -740,40 +739,21 @@ class CGI(WFIRSTInstrument):
             self._fpmres = 3
             self._owa = 20.
             self._Mfpm = int(np.ceil(self._fpmres * self._owa))
-
-            self._fpm_fname = \
-                os.path.join(self._datapath,"optics/F825/FPM_res50_SPC-20181220")
-                
-        if value.startswith('HLC'):
-            self._fmpres = 3 # Placeholder needs to change
-            self._owa = 20. # Placeholder needs to change
-            self._Mfpm = int(np.ceil(self._fmpres*self._owa))
-            lam_occ = [5.4625e-07, 5.49444444444e-07, 5.52638888889e-07, 5.534375e-07, 5.55833333333e-07, 5.59027777778e-07, 5.60625e-07, 5.62222222222e-07, 5.65416666667e-07, 5.678125e-07, 5.68611111111e-07, 5.71805555556e-07, 5.75e-07, 5.78194444444e-07, 5.81388888889e-07, 5.821875e-07, 5.84583333333e-07, 5.87777777778e-07, 5.89375e-07, 5.90972222222e-07, 5.94166666667e-07, 5.965625e-07, 5.97361111111e-07, 6.00555555556e-07, 6.0375e-07 ]
-            lam_occs = [    '5.4625e-07', '5.49444444444e-07', '5.52638888889e-07', '5.534375e-07', '5.55833333333e-07', '5.59027777778e-07', 
-                            '5.60625e-07', '5.62222222222e-07', '5.65416666667e-07', '5.678125e-07', '5.68611111111e-07', '5.71805555556e-07', 
-                            '5.75e-07', '5.78194444444e-07', '5.81388888889e-07', '5.821875e-07', '5.84583333333e-07', '5.87777777778e-07', 
-                            '5.89375e-07', '5.90972222222e-07', '5.94166666667e-07', '5.965625e-07', '5.97361111111e-07', '6.00555555556e-07', '6.0375e-07' ]
-            #lam_occs = [ prefix + 'occ_lam' + s + 'theta6.69polp_' for s in lam_occs ]
-            lambda_m = 575e-9
-            wlam = (np.abs(lambda_m-np.array(lam_occ))).argmin() # find index of the nearest matching FPM wavelength
-
-            # default to s polaxissl
-            self._fpm_fname = \
-                os.path.join(self._datapath,"optics/F575/run461_occ_lam{0:s}theta6.69pol{1:s}_real.fits".format(
-                    lam_occs[wlam],'p'))
-            self._fpmopd_fname = \
-                os.path.join(self._datapath,"optics/F575/run461_occ_lam{0:s}theta6.69pol{1:s}_imag.fits".format(
-                    lam_occs[wlam],'p'))
-
-        else: # default to charspc
+            self._fpm_fname = os.path.join(self._datapath,"optics/F825/FPM_res50_SPC-20181220.fits")
+        elif value.startswith('CHARSPC'): # default to charspc
             self._fpmres = 4
             self._owa = 9.
             self._Mfpm = int(np.ceil(self._fpmres * self._owa))
-            self._fpm_fname = \
-                os.path.join(self._datapath,
-                             "optics/F730/CHARSPC_FPM_25WA90_2x65deg_-_FP1res{0:d}_evensamp_D{1:03d}_{2:s}.fits.gz".format(
-                                 self._fpmres, 2 * self._Mfpm, self.filter))
-
+            self._fpm_fname = os.path.join(self._datapath,\
+                                           "optics/deprecated/CHARSPC_FPM_25WA90_2x65deg_-_FP1res{0:d}_evensamp_D{1:03d}_{2:s}.fits.gz"\
+                                           .format(self._fpmres,2*self._Mfpm, self.filter))
+        elif value.startswith('DISKSPC'): # default to charspc
+            self._fpmres = 3
+            self._owa = 20.
+            self._Mfpm = int(np.ceil(self._fpmres * self._owa))
+            self._fpm_fname = os.path.join(self._datapath,\
+                                           "optics/deprecated/DISKSPC_FPM_65WA200_360deg_-_FP1res{0:d}_evensamp_D{1:03d}_{2:s}.fits.gz"\
+                                           .format(self._fpmres,2*self._Mfpm, self.filter))
 
     @property
     def lyotstop(self):
@@ -783,20 +763,17 @@ class CGI(WFIRSTInstrument):
     @lyotstop.setter
     def lyotstop(self, value):
         # preserve case for this one since we're used to that with the lyot mask names
-
-        if value == 'LS_F825':
-        	self._lyotstop_fname = \
-            os.path.join(self._datapath, "optics/F825/DISKSPC_LS_1000pix.fits")
-        elif value == 'LS_F575':
-            self._lyotstop_fname = \
-            os.path.join(self._datapath, "optics/F575/run461_lyot.fits")
-        else:
-            self._lyotstop_fname = \
-            os.path.join(self._datapath, "optics/F730/SPC_LS_30D88_1002pix.fits.gz")
-
+        self._lyotstop = value
         if value not in self.lyotstop_list:
             raise ValueError("Instrument {0} doesn't have a Lyot mask called {1}.".format(self.name, value))
-        self._lyotstop = value
+        elif value == 'LS_F730':
+        	self._lyotstop_fname = os.path.join(self._datapath, "optics/F730/LS_SPC-20190130.fits")
+        elif value == 'LS_F825':
+        	self._lyotstop_fname = os.path.join(self._datapath, "optics/F825/LS_SPC-20181220_1k.fits")
+        elif value == 'LS_F575':
+            self._lyotstop_fname = os.path.join(self._datapath, "optics/F575/run461_lyot.fits")
+        else:
+            self._lyotstop_fname = os.path.join(self._datapath, "optics/deprecated/SPC_LS_30D88_256pix.fits.gz")
 
     #@property
     #def fieldstop(self):
@@ -805,12 +782,6 @@ class CGI(WFIRSTInstrument):
 
     #@fieldstop.setter
     #def fieldstop(self, value):
-
-    #	if value == 'FS_HLC':
-    #		os.path.join(self._datapath,"optics/F575/")
-    #	else:
-    #		print('mode has no field stop')
-    
 
     #	if value == 'FS_HLC':
     #		os.path.join(self._datapath,"optics/F575/")
@@ -845,6 +816,10 @@ class CGI(WFIRSTInstrument):
         self.apodizer = settings[2]
         self.fpm = settings[3]
         self.lyotstop = settings[4]
+        if settings[5]: # add the dms from the mode settings if those settings exist
+            print('dms')
+            self.dm1 = settings[5]
+            self.dm2 = settings[6]
         _log.info('Set the following optical configuration:')
         _log.info('camera = {0}, filter = {1}, apodizer = {2}, fpm = {3}, lyotstop = {4}'.format(\
                   self.camera, self.filter, self.apodizer, self.fpm, self.lyotstop))
@@ -878,16 +853,26 @@ class CGI(WFIRSTInstrument):
             shift = (self.options['pupil_shift_x'], self.options['pupil_shift_y'])
         else:
             shift = None
-
+        
+#         if self.mode == 'CHARSPC_F730':
+#             optsys.add_pupil(opd=os.path.join(self._datapath, "optics/F730/spc-spec_long_with_aberrations_dm1.fits"),\
+#                              opdunits=u'meters',name='DM1')
+#             optsys.add_pupil(opd=os.path.join(self._datapath, "optics/F730/spc-spec_long_with_aberrations_dm2.fits"),\
+#                              opdunits=u'meters',name='DM2')
+        if self.mode == 'DISKSPC_F825':
+            optsys.add_pupil(opd=os.path.join(self._datapath, "optics/F825/spc-wide_with_aberrations_dm1.fits"),\
+                             opdunits=u'meters',name='DM1')
+            optsys.add_pupil(opd=os.path.join(self._datapath, "optics/F825/spc-wide_with_aberrations_dm2.fits"),\
+                             opdunits=u'meters',name='DM2')
+        
         # Add the shaped pupil apodizer
         if self._apodizer != 'NONE':
             optsys.add_pupil(transmission=self._apodizer_fname, name=self.apodizer, shift=None)
 
-        # special case of the Hybrid Lyot Coronagraph
-        if self._fpm.startswith('HLC'):
+        # Add the FPM
+        if self._fpm.startswith('HLC'): # special case of the Hybrid Lyot Coronagraph
             optsys.add_image(transmission=self._fpm_fname, opd=self._fpmopd_fname, opdunits=u'meters', name=self.fpm)
         else:
-            # Add the FPM
             optsys.add_image(transmission=self._fpm_fname, name=self.fpm)
 
         # Add Lyot stop
@@ -935,3 +920,5 @@ class CGI(WFIRSTInstrument):
                              comment='Lyot stop pixel scale in m/pixel')
         result[0].header.set('PUPLDIAM', lyotstop_hdr['PUPLDIAM'],
                              comment='Lyot stop array size, incl padding.')
+        
+        
